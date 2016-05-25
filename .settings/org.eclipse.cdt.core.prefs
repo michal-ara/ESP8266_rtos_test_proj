@@ -1,0 +1,6 @@
+eclipse.preferences.version=1
+environment/project/cdt.managedbuild.toolchain.gnu.mingw.base.1544080900.1345347611/ESP_RTOS_HOME/delimiter=;
+environment/project/cdt.managedbuild.toolchain.gnu.mingw.base.1544080900.1345347611/ESP_RTOS_HOME/operation=append
+environment/project/cdt.managedbuild.toolchain.gnu.mingw.base.1544080900.1345347611/ESP_RTOS_HOME/value=C\:\\Espressif\\ESP8266_RTOS_SDK
+environment/project/cdt.managedbuild.toolchain.gnu.mingw.base.1544080900.1345347611/append=true
+environment/project/cdt.managedbuild.toolchain.gnu.mingw.base.1544080900.1345347611/appendContributed=true
