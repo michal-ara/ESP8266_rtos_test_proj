@@ -2,6 +2,7 @@
 
 #include <esp8266/uart_register.h>
 #include <esp8266/eagle_soc.h>
+#include <esp_softap.h>
 
 #include "gpio.h"
 #include "uart.h"
@@ -15,9 +16,41 @@
 #define BUTTON 0
 #define UART_QUEUE_LEN 3
 
+#define SSID_NAME "test"
+#define SSID_PASS "test_pass"
+
 extern xQueueHandle xQueue;
 xSemaphoreHandle semphr = NULL;
 xSemaphoreHandle semphr1 = NULL;
+
+void wifi_init(void)
+{
+	printf("\r\n Wifi initialization ... \r\n");
+
+	struct softap_config sysConf;
+	struct softap_config oldConf;
+
+	sprintf(sysConf.ssid, "%s", SSID_NAME);
+	sprintf(sysConf.password, "%s", SSID_PASS);
+
+	wifi_softap_get_config(&oldConf);
+	//oldInfo = wifi_softap_get_station_info();
+	if( DHCP_STARTED == wifi_softap_dhcps_status())
+		wifi_softap_dhcps_stop();
+
+
+	printf("Name : %s Pass : %s \r\n", oldConf.ssid, oldConf.password);
+	sprintf(oldConf.ssid, "%s", SSID_NAME);
+
+	wifi_softap_set_config(&oldConf);
+	printf("Name : %s Pass : %s \r\n", oldConf.ssid, oldConf.password);
+
+	wifi_softap_dhcps_start();
+
+	//if(wifi_softap_)
+
+}
+
 
 void task2(void *pvParameters)
 {
@@ -89,18 +122,6 @@ void vTaskUartReceiver(void *pvParameters)
 		if( xQueueReceive(xQueue, &rxChar, 1000) )
 		{
 
-
-			/*
-			if(count == max_char -1)
-			{
-				msg[count] = '\n';
-				count =0;
-
-				//przetwarzanie
-				printf("=: %s", msg);
-
-			}
-*/
 			if(0 == count)
 				printf("=:");
 			if(10==(int)rxChar.rx_char)
@@ -114,26 +135,7 @@ void vTaskUartReceiver(void *pvParameters)
 			}
 			printf("%c", rxChar.rx_char);
 			count++;
-			/*
-			else
-			{
-				msg[count] = rxChar.rx_char;
-			}
-			count++;
-			*/
 		}
-		/*else
-		{
-			printf("*");
-		}*/
-		//vTaskDelay(1000 / portTICK_RATE_MS);
-
-
-		/*if(strcmp(x, "2")==0)
-			printf("+\n");*/
-
-
-		//printf("%c", x);
 
 	}
 
@@ -145,13 +147,23 @@ void user_init(void)
 
 	const_uart();
 
-	printf("SDK : %s", system_get_sdk_version() );
+	wifi_init();
+
+	printf("\r\nSystem started (SDK : %s)... \r\n", system_get_sdk_version() );
+
+
+
+
+
+	printf("\r\nInit completed... \r\n");
 
 	semphr = xSemaphoreCreateMutex();
 
+
+
 	//vTaskEndScheduler();
 	xTaskCreate(vTaskLed, "TASK_LED", 256, NULL, 2, NULL);
-	xTaskCreate(vTaskButton, "TASK_button", 256, NULL, 2, NULL);
+	//xTaskCreate(vTaskButton, "TASK_button", 256, NULL, 2, NULL);
 
 	//xTaskCreate(task3, "TASK_3", 256, NULL, 2, NULL);
 
